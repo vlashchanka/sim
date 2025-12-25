@@ -26,6 +26,26 @@ const logger = createLogger('CopilotChatAPI')
 
 const SIM_AGENT_API_URL = env.SIM_AGENT_API_URL || SIM_AGENT_API_URL_DEFAULT
 
+/**
+ * Check if the Sim Agent API is running locally (localhost or 127.0.0.1)
+ * For local mode, we don't need to send the API key
+ */
+function isLocalSimAgent(url: string): boolean {
+  try {
+    const parsed = new URL(url)
+    return (
+      parsed.hostname === 'localhost' ||
+      parsed.hostname === '127.0.0.1' ||
+      parsed.hostname === '[::1]' ||
+      parsed.hostname === ''
+    )
+  } catch {
+    return false
+  }
+}
+
+const IS_LOCAL_SIM_AGENT = isLocalSimAgent(SIM_AGENT_API_URL)
+
 const FileAttachmentSchema = z.object({
   id: z.string(),
   key: z.string(),
@@ -481,7 +501,8 @@ export async function POST(req: NextRequest) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(env.COPILOT_API_KEY ? { 'x-api-key': env.COPILOT_API_KEY } : {}),
+        // Only send API key if not in local mode
+        ...(!IS_LOCAL_SIM_AGENT && env.COPILOT_API_KEY ? { 'x-api-key': env.COPILOT_API_KEY } : {}),
       },
       body: JSON.stringify(requestPayload),
     })
