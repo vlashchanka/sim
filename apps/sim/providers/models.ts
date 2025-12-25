@@ -1638,7 +1638,7 @@ export const PROVIDER_DEFINITIONS: Record<string, ProviderDefinition> = {
     name: 'LM Studio',
     description: 'Local LM Studio with OpenAI-compatible API',
     defaultModel: 'lmstudio/generic',
-    modelPatterns: [/^lmstudio\//],
+    modelPatterns: [/^lmstudio\//, /^lmstudio-/],
     icon: LMStudioIcon,
     capabilities: {
       temperature: { min: 0, max: 2 },

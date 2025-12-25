@@ -38,6 +38,7 @@ export const MODEL_OPTIONS = [
   // { value: 'gpt-4.1', label: 'GPT 4.1' },
   // { value: 'o3', label: 'o3' },
   { value: 'gemini-3-pro', label: 'Gemini 3 Pro' },
+  { value: 'lmstudio-local', label: 'LM Studio (Local)' },
 ] as const
 
 /**
