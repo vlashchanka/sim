@@ -87,7 +87,7 @@ export interface SendMessageRequest {
     | 'claude-4.5-opus'
     | 'claude-4.1-opus'
     | 'gemini-3-pro'
-    | 'lmstudio-local'
+    | 'openai/gpt-oss-20b'
   prefetch?: boolean
   createNewChat?: boolean
   stream?: boolean

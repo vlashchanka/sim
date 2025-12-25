@@ -27,7 +27,7 @@ const DEFAULT_ENABLED_MODELS: Record<string, boolean> = {
   'claude-4.5-opus': true,
   // 'claude-4.1-opus': true,
   'gemini-3-pro': true,
-  'lmstudio-local': true,
+  'openai/gpt-oss-20b': true,
 }
 
 // GET - Fetch user's enabled models

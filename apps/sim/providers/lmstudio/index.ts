@@ -87,9 +87,11 @@ export const lmstudioProvider: ProviderConfig = {
     }
 
     const apiKey = request.apiKey || 'empty'
+    // Don't append /v1 if the base URL already contains it
+    const hasV1 = baseUrl.endsWith('/v1')
     const lmstudio = new OpenAI({
       apiKey,
-      baseURL: `${baseUrl}/v1`,
+      baseURL: hasV1 ? baseUrl : `${baseUrl}/v1`,
     })
 
     const allMessages = []
