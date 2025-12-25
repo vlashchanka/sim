@@ -5,6 +5,7 @@ import { cerebrasProvider } from '@/providers/cerebras'
 import { deepseekProvider } from '@/providers/deepseek'
 import { googleProvider } from '@/providers/google'
 import { groqProvider } from '@/providers/groq'
+import { lmstudioProvider } from '@/providers/lmstudio'
 import { mistralProvider } from '@/providers/mistral'
 import { ollamaProvider } from '@/providers/ollama'
 import { openaiProvider } from '@/providers/openai'
@@ -30,6 +31,7 @@ const providerRegistry: Record<ProviderId, ProviderConfig> = {
   'azure-openai': azureOpenAIProvider,
   openrouter: openRouterProvider,
   ollama: ollamaProvider,
+  lmstudio: lmstudioProvider,
 }
 
 export async function getProviderExecutor(

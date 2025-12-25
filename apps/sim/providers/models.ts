@@ -15,6 +15,7 @@ import {
   DeepseekIcon,
   GeminiIcon,
   GroqIcon,
+  LMStudioIcon,
   MistralIcon,
   OllamaIcon,
   OpenAIIcon,
@@ -1632,6 +1633,19 @@ export const PROVIDER_DEFINITIONS: Record<string, ProviderDefinition> = {
     contextInformationAvailable: false,
     models: [], // Populated dynamically
   },
+  lmstudio: {
+    id: 'lmstudio',
+    name: 'LM Studio',
+    description: 'Local LM Studio with OpenAI-compatible API',
+    defaultModel: 'lmstudio/generic',
+    modelPatterns: [/^lmstudio\//],
+    icon: LMStudioIcon,
+    capabilities: {
+      temperature: { min: 0, max: 2 },
+      toolUsageControl: false, // LM Studio does not support tool_choice parameter
+    },
+    models: [], // Populated dynamically
+  },
 }
 
 export function getProviderModels(providerId: string): string[] {
@@ -1768,6 +1782,18 @@ export function updateOllamaModels(models: string[]): void {
 
 export function updateVLLMModels(models: string[]): void {
   PROVIDER_DEFINITIONS.vllm.models = models.map((modelId) => ({
+    id: modelId,
+    pricing: {
+      input: 0,
+      output: 0,
+      updatedAt: new Date().toISOString().split('T')[0],
+    },
+    capabilities: {},
+  }))
+}
+
+export function updateLMStudioModels(models: string[]): void {
+  PROVIDER_DEFINITIONS.lmstudio.models = models.map((modelId) => ({
     id: modelId,
     pricing: {
       input: 0,

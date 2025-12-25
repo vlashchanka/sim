@@ -14,6 +14,7 @@ export type ProviderId =
   | 'ollama'
   | 'openrouter'
   | 'vllm'
+  | 'lmstudio'
 
 /**
  * Model pricing information per million tokens

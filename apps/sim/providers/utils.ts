@@ -88,6 +88,7 @@ export const providers: Record<ProviderId, ProviderMetadata> = {
   'azure-openai': buildProviderMetadata('azure-openai'),
   openrouter: buildProviderMetadata('openrouter'),
   ollama: buildProviderMetadata('ollama'),
+  lmstudio: buildProviderMetadata('lmstudio'),
 }
 
 export function updateOllamaProviderModels(models: string[]): void {
@@ -99,6 +100,12 @@ export function updateVLLMProviderModels(models: string[]): void {
   const { updateVLLMModels } = require('@/providers/models')
   updateVLLMModels(models)
   providers.vllm.models = getProviderModelsFromDefinitions('vllm')
+}
+
+export function updateLMStudioProviderModels(models: string[]): void {
+  const { updateLMStudioModels } = require('@/providers/models')
+  updateLMStudioModels(models)
+  providers.lmstudio.models = getProviderModelsFromDefinitions('lmstudio')
 }
 
 export async function updateOpenRouterProviderModels(models: string[]): Promise<void> {
