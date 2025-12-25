@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { createLogger } from '@/lib/logs/console/logger'
 import { executeProviderRequest } from '@/providers'
-import type { Message } from '@/providers/types'
+import type { Message, ProviderToolConfig } from '@/providers/types'
 import { getProviderFromModel } from '@/providers/utils'
 
 const logger = createLogger('LocalSimAgentAPI')
@@ -34,10 +34,22 @@ export async function POST(req: NextRequest) {
       model: body.model,
       mode: body.mode,
       hasTools: !!body.tools,
+      hasBaseTools: !!body.baseTools,
       hasContexts: !!body.contexts && body.contexts.length > 0,
     })
 
-    const { message, model, contexts, stream = true, chatId, workflowId, userId } = body
+    const {
+      message,
+      model,
+      contexts,
+      stream = true,
+      chatId,
+      workflowId,
+      userId,
+      tools,
+      baseTools,
+      credentials,
+    } = body
 
     // Get the provider and model mapping
     const modelMapping = COPILOT_MODEL_MAPPING[model] || {
@@ -85,6 +97,37 @@ export async function POST(req: NextRequest) {
       content: message,
     })
 
+    // Combine tools and baseTools into provider format
+    const providerTools: ProviderToolConfig[] = []
+
+    if (Array.isArray(tools) && tools.length > 0) {
+      for (const tool of tools) {
+        providerTools.push({
+          id: tool.name,
+          name: tool.name,
+          description: tool.description,
+          params: {},
+          parameters: tool.input_schema,
+          usageControl: tool.defer_loading ? ('auto' as const) : undefined,
+        })
+      }
+    }
+
+    if (Array.isArray(baseTools) && baseTools.length > 0) {
+      for (const tool of baseTools) {
+        providerTools.push({
+          id: tool.name,
+          name: tool.name,
+          description: tool.description,
+          params: {},
+          parameters: tool.input_schema,
+          usageControl: tool.executeLocally ? ('force' as const) : undefined,
+        })
+      }
+    }
+
+    logger.info(`[${requestId}] Prepared ${providerTools.length} tools for provider`)
+
     // Prepare the provider request
     const providerRequest = {
       model: actualModel,
@@ -95,6 +138,7 @@ export async function POST(req: NextRequest) {
       maxTokens: 8192,
       apiKey: '', // Local providers don't need API key
       isCopilotRequest: true,
+      tools: providerTools.length > 0 ? providerTools : undefined,
     }
 
     // Execute the provider request
@@ -213,7 +257,7 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    // Handle non-streaming response (shouldn't normally happen with Copilot)
+    // Handle non-streaming response with tool calls
     if (result && typeof result === 'object' && 'content' in result) {
       // Return SSE format for non-streaming as well
       const responseId = crypto.randomUUID()
